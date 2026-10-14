@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valores ARA - Menu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container dashboard-layout">
+        
+        <!-- TELA INICIAL (LADO ESQUERDO) -->
+        <div class="menu-left-section">
+            <div class="title-board">
+                <div class="title-main">Trilha</div>
+                <div class="title-sub">de VALORES</div>
+            </div>
+            
+            <!-- BOTÃO DE ATIVAÇÃO ACÚSTICA: Destrava a política de autoplay do navegador -->
+            <div class="btn btn-secondary" onclick="if(typeof tocarSom === 'function') tocarSom(SOM_CLIQUE)" style="padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; margin-top: 10px; width: auto; font-weight: bold; cursor: pointer;">
+                🎵 Ligar Trilha Sonora
+            </div>
+            
+            <!-- CONTÊINER DO MASCOTE -->
+            <div class="mascot-area">
+                <div class="mascot-container-bg">
+                    <img id="mascoteMenu" src="mascote_normal.gif" class="mascot-img" alt="Mascote ARA">
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÕES DE NAVEGAÇÃO (LADO DIREITO) -->
+        <div class="menu-right-section">
+            <div class="menu-buttons">
+                <a href="jogo.html" class="btn btn-primary">INICIAR JOGO</a>
+                <a href="opcoes.html" class="btn btn-secondary">OPÇÕES</a>
+                <div class="btn btn-light" onclick="alert('Obrigado por jogar!')">SAIR</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Cérebro de Scripts Integrado -->
+    <script src="jogo.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valores ARA - Jogo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container dashboard-layout">
+        
+        <!-- COLUNA DA ESQUERDA: STATUS, PERGUNTA E ALTERNATIVAS -->
+        <div class="left-game-column">
+            <!-- Cabeçalho de Status Integrado (Pergunta Atual, Prêmio e Botão Sair) -->
+            <div class="top-header">
+                <span id="numPergunta">Pergunta 1</span>
+                <span id="valorPremio">PTs 1.000</span>
+                <!-- BOTÃO DE ESCAPE: Retorna instantaneamente para a home -->
+                <a href="index.html" class="btn btn-wrong" style="padding: 4px 12px; font-size: 0.75rem; border-radius: 8px; border: 1px solid #fff; box-shadow: none; text-decoration: none;">SAIR</a>
+            </div>
+
+            <!-- Caixa Dinâmica de Pergunta -->
+            <div class="question-box" id="questionText">
+                Carregando Pergunta...
+            </div>
+            
+            <!-- Container das Alternativas A, B, C, D -->
+            <div class="options-container" id="optionsContainer">
+                <!-- Preenchido dinamicamente via JavaScript -->
+            </div>
+        </div>
+
+        <!-- COLUNA DA DIREITA: PAINEL DE AJUDAS E REAÇÕES DO MASCOTE -->
+        <div class="right-panel-column">
+            <!-- Seção de Ajudas -->
+            <div class="help-section">
+                <div class="help-title">Ajudas Disponíveis</div>
+                <div class="help-grid-2">
+                    <div class="help-card" id="ajudaCartas" onclick="usarCartas(event)">Cartas</div>
+                    <div class="help-card" id="ajudaPulo" onclick="usarPulo(event)">Pular</div>
+                </div>
+            </div>
+
+            <!-- Área Estruturada do Mascote -->
+            <div class="mascot-area">
+                <div class="speech-bubble" id="speechBubble">Acertou! Aloha!</div>
+                <div class="mascot-container-bg">
+                    <img id="mascotelmg" src="mascote_normal.gif" class="mascot-img" alt="Mascote Reação">
+                </div>
+            </div>
+
+            <!-- Área Reservada para a Injeção dos Botões Próxima/Tentar de Novo -->
+            <div id="actionBtnArea"></div>
+        </div>
+
+    </div>
+
+    <!-- Scripts do Banco de Perguntas e Lógica Core -->
+    <script src="perguntasara.js"></script>
+    <script src="jogo.js"></script>
+    <script>
+        // Disparador de segurança automática ao carregar o documento
+        window.addEventListener('load', () => {
+            if (typeof iniciarJogo === 'function') {
+                iniciarJogo();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,527 @@
+/* ==========================================================================
+   1. VARIÁVEIS DE CORES E PALETA DE CORES (SISTEMA DE TEMAS)
+   ========================================================================== */
+/* Tema Padrão: Floresta Nativa */
+:root {
+    --bg-green-dark: #0f3822;
+    --bg-green-light: #124028;
+    --bg-wood-light: #f4e8d1;
+    --card-brown-dark: #5c3517;
+    --card-brown-border: #3d220e;
+    --btn-green: #48a859;
+    --btn-green-hover: #3b8e49;
+    --text-yellow: #ffeb7b;
+    --text-white: #ffffff;
+    --btn-wrong: #c0392b;
+    --btn-correct: #27ae60;
+}
+
+/* Tema Alternativo: Paraíso Tropical / Praia (Sobreposição Dinâmica) */
+:root.theme-praia {
+    --bg-green-dark: #0a2e38;      /* Azul Petróleo Profundo (Fundo do mar) */
+    --bg-green-light: #104e5b;     /* Azul Oceano Intermediário */
+    --bg-wood-light: #f7ebd3;      /* Areia de Praia Clara */
+    --card-brown-dark: #007a87;    /* Verde-Água / Turquesa Escuro */
+    --card-brown-border: #005660;  /* Contorno Turquesa */
+    --btn-green: #20b2aa;          /* Light Sea Green (Botões) */
+    --btn-green-hover: #1c9c95;    /* Feedback de clique do botão */
+    --text-yellow: #fff3a1;        /* Amarelo Sol Quente para Títulos */
+    --text-white: #ffffff;
+    --btn-wrong: #d94e34;          /* Coral / Vermelho Queimado */
+    --btn-correct: #107e57;        /* Verde Alga Sólido */
+}
+
+/* Reset Geral Antiquebra com Unidades Relativas (rem) */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background-color: var(--bg-green-dark);
+    background: radial-gradient(circle, #165232 0%, var(--bg-green-dark) 100%);
+    color: var(--text-white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* ==========================================================================
+   2. CONTAINERS PRINCIPAIS (DESIGN HORIZONTAL WEB DESKTOP)
+   ========================================================================== */
+.game-container {
+    background-color: var(--bg-green-light);
+    border: 4px solid #082113;
+    border-radius: 24px;
+    width: 100%;
+    
+    /* Configuração de Painel de Bordo Horizontal Rígido na Web */
+    max-width: 860px; 
+    height: 520px;
+    min-height: 520px;
+    max-height: 95vh;
+    
+    padding: 24px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Grade utilitária para dividir a tela em 2 colunas horizontais na Web */
+.dashboard-layout {
+    display: grid !important;
+    grid-template-columns: 1.2fr 0.8fr; 
+    gap: 20px;
+    align-items: stretch;
+}
+
+.config-container {
+    background-color: var(--card-brown-dark);
+    border: 4px solid var(--card-brown-border);
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-radius: 24px;
+}
+
+.hidden {
+    display: none !important;
+}
+/* ==========================================================================
+   3. ELEMENTOS DO MENU INICIAL (INDEX.HTML HORIZONTAL)
+   ========================================================================== */
+.menu-left-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-right-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.title-board {
+    background: var(--card-brown-dark);
+    border: 4px solid var(--card-brown-border);
+    border-radius: 18px;
+    padding: 16px 35px;
+    text-align: center;
+    width: 100%;
+    box-shadow: 0 6px 0 #291507, 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.title-main {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--text-yellow);
+    text-shadow: 3px 3px 0 #000;
+    line-height: 1;
+}
+
+.title-sub {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: 3px;
+    margin-top: 5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.menu-buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.btn {
+    padding: 15px;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s, filter 0.2s, background-color 0.2s;
+    text-decoration: none;
+    text-align: center;
+}
+
+@media (hover: hover) {
+    .btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+    }
+}
+
+.btn:active {
+    transform: translateY(2px) !important;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.3) !important;
+}
+
+.btn-primary { background: var(--btn-green); color: #082412; border: 2px solid #fff; }
+.btn-secondary { background: var(--card-brown-dark); color: var(--text-yellow); border: 2px solid var(--card-brown-border); }
+.btn-light { background: #e0e0e0; color: #333; border: 2px solid #fff; }
+.btn-wrong { background: var(--btn-wrong); color: #fff; border: 2px solid #fff; }
+
+/* ==========================================================================
+   4. INTERFACE DO QUIZ (JOGO.HTML HORIZONTAL DESKTOP)
+   ========================================================================== */
+.left-game-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+}
+
+.right-panel-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 18px;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.top-header {
+    background: var(--card-brown-dark);
+    border: 3px solid var(--card-brown-border);
+    border-radius: 14px;
+    padding: 10px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: var(--text-yellow);
+    font-size: 1.05rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    width: 100%;
+}
+
+.question-box {
+    background: var(--card-brown-dark);
+    border: 3px solid var(--card-brown-border);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.option-btn {
+    background: var(--btn-green);
+    color: #0a2d18;
+    border: 2px solid #fff;
+    border-radius: 25px;
+    padding: 10px 18px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+    transition: background-color 0.15s, transform 0.05s;
+}
+
+.option-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.25); }
+.option-btn.correct { background-color: var(--btn-correct) !important; color: #fff !important; border-color: #fff !important; }
+.option-btn.wrong { background-color: var(--btn-wrong) !important; color: #fff !important; border-color: #fff !important; }
+
+/* ==========================================================================
+   5. PAINEL DE AJUDAS (CARTAS E PULAR)
+   ========================================================================== */
+.help-section { width: 100%; }
+.help-title {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-yellow);
+    margin-bottom: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.help-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.help-card {
+    background: var(--card-brown-dark);
+    border: 2px solid var(--card-brown-border);
+    border-radius: 12px;
+    text-align: center;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: var(--text-white);
+    position: relative;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.3);
+}
+.help-card.used { opacity: 0.4; pointer-events: none; }
+.help-card.used::after {
+    content: "X"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: #ff3333; font-size: 1.6rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+/* ==========================================================================
+   6. ÁREA DINÂMICA DO MASCOTE E BOTÃO DE AÇÃO (WEB DESKTOP)
+   ========================================================================== */
+.mascot-area {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    width: 100% !important;
+    height: 150px !important;
+    margin: auto 0;
+}
+
+.mascot-container-bg {
+  background: #f5ebd9 !important; /* Cor do fundo do container */
+  border: 3px solid var(--card-brown-dark);
+  outline: 2px solid var(--card-brown-border);
+  border-radius: 18px;
+  padding: 6px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  overflow: hidden !important; /* Esconde qualquer sobra que passe da borda arredondada */
+}
+
+.mascot-img {
+  width: 110px !important;  
+  height: 110px !important; 
+  object-fit: contain !important; 
+  border-radius: 12px !important;
+  display: block !important;
+  transform: scale(1.15) !important; /* Dá um leve zoom de 5% para empurrar as bordas do GIF para fora da área visível, fazendo a linha sumir */
+}
+
+
+.speech-bubble {
+    background: var(--text-yellow);
+    color: #3b200b;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 4px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    position: relative;
+    display: none;
+    z-index: 10;
+    animation: popIn 0.25s ease-out;
+}
+.speech-bubble::after {
+    content: ""; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+    border-width: 5px 5px 0; border-style: solid; border-color: var(--text-yellow) transparent;
+}
+
+#actionBtnArea {
+    width: 100%;
+    height: 46px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#actionBtnArea .btn { width: 100%; margin: 0; padding: 10px; font-size: 1rem; }
+
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+/* ==========================================================================
+   7. ESTILOS EXCLUSIVOS DA TELA DE OPÇÕES VERTICAL (WEB & MOBILE)
+   ========================================================================== */
+.game-container.vertical-config-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    max-width: 440px !important;
+    height: 680px !important;
+    min-height: 680px !important;
+    max-height: 95vh !important;
+    padding: 20px !important;
+}
+
+.config-scroll-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.section-box { 
+    background: rgba(0, 0, 0, 0.3); 
+    border: 2px solid var(--card-brown-border); 
+    border-radius: 14px; 
+    padding: 14px; 
+    width: 100%; 
+}
+
+.section-heading { 
+    color: #ffeb7b; 
+    font-size: 1.05rem; 
+    font-weight: bold; 
+    margin-bottom: 10px; 
+    border-bottom: 1px solid rgba(255,255,255,0.15); 
+    padding-bottom: 6px; 
+}
+
+.row { margin-bottom: 12px; }
+.row label { display: block; font-size: 0.9rem; margin-bottom: 6px; font-weight: bold; }
+
+.checkbox-row { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.checkbox-row input { width: 20px; height: 20px; cursor: pointer; accent-color: var(--btn-green); }
+
+input[type="range"], select { width: 100%; padding: 8px; border-radius: 8px; border: none; outline: none; }
+input[type="range"] { accent-color: var(--text-yellow); cursor: pointer; }
+select { background-color: #fff; color: #333; cursor: pointer; }
+
+.info-box-vertical {
+    background: #ffffff;
+    color: #333333;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.info-box-vertical dt { font-weight: bold; color: var(--card-brown-dark); margin-top: 6px; }
+.info-box-vertical dt:first-of-type { margin-top: 0; }
+.info-box-vertical dd { margin-left: 0; margin-bottom: 4px; }
+.info-box-vertical ul { padding-left: 16px; margin: 0; }
+.info-box-vertical li { margin-bottom: 4px; }
+
+/* Customização para deixar as barras de rolagem finas e integradas */
+.config-scroll-body::-webkit-scrollbar,
+.left-game-column::-webkit-scrollbar {
+    width: 5px;
+}
+.config-scroll-body::-webkit-scrollbar-thumb,
+.left-game-column::-webkit-scrollbar-thumb {
+    background-color: var(--card-brown-dark);
+    border-radius: 10px;
+}
+.config-scroll-body::-webkit-scrollbar-track,
+.left-game-column::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* ==========================================================================
+   8. SEÇÃO 9: MÍDIA QUERY CRÍTICA - DESATIVA GRID E TRAVA O SEU MOBILE PERFEITO
+   ========================================================================== */
+@media (max-width: 480px) {
+    body { padding: 0; }
+    
+    .game-container {
+        max-width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        min-height: 100vh;
+        min-height: 100dvh;
+        max-height: 100vh;
+        max-height: 100dvh;
+        border-radius: 0;
+        border: none;
+        padding: 10px 12px 14px 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    /* Quebra a grade horizontal da Web e força o fluxo vertical limpo de aplicativo */
+    .dashboard-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 0;
+    }
+
+    .menu-left-section, .menu-right-section,
+    .left-game-column, .right-panel-column {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        background: transparent !important;
+        padding: 0 !important;
+        border: none !important;
+        gap: 0;
+    }
+
+    .title-board { width: 100%; padding: 4px 12px; margin-top: 2px; }
+    .title-main { font-size: 1.8rem; }
+    .title-sub { font-size: 0.85rem; letter-spacing: 2px; }
+
+    .menu-buttons { display: flex; flex-direction: column; gap: 12px; margin: auto 0; width: 100%; }
+
+    .question-box { padding: 8px 12px; font-size: 0.85rem; margin: 4px 0; min-height: auto; }
+    .options-container { gap: 5px; width: 100%; margin-bottom: 4px; }
+    .option-btn { padding: 6px 12px; font-size: 0.82rem; border-radius: 20px; }
+    
+    .help-section { margin: 2px 0 4px 0; width: 100%; }
+    .help-card { padding: 5px; font-size: 0.8rem; }
+
+    /* TAMANHO DO MASCOTE AJUSTADO: Maior e destacado no Celular (Conforme Solicitado) */
+    .mascot-area {
+        height: 105px !important;
+        margin-top: 2px !important;
+        margin-bottom: 2px !important;
+        display: flex !important;
+    }
+
+    .mascot-container-bg { border-radius: 14px; padding: 4px; border-width: 2px; }
+    .mascot-img { width: 75px !important; height: 75px !important; }
+    .speech-bubble { padding: 2px 6px; font-size: 0.68rem; margin-bottom: 1px; }
+
+    /* Área segura do botão Próxima/Tentar de novo colada no fundo do celular */
+    #actionBtnArea {
+        height: 40px;
+        margin-top: auto;
+        margin-bottom: 8px;
+        width: 100%;
+    }
+    #actionBtnArea .btn { padding: 8px; font-size: 0.85rem; }
+}
+
+/* Ocultação inteligente de cabeçalhos caso a tela seja minúscula (ex: modo paisagem em celular) */
+@media (max-height: 400px) {
+    .title-board, .mascot-area { display: none !important; }
+}

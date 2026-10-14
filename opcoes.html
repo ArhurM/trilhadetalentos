@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valores ARA - Configurações</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container vertical-config-layout">
+        
+        <!-- CABEÇALHO DA TELA DE OPÇÕES -->
+        <div class="top-header" style="margin-bottom: 12px; justify-content: center;">
+            <span>Configurações & Guia</span>
+        </div>
+
+        <!-- ÁREA DE ROLAGEM INTERNA: EMPILHA OS CONTROLES CONFORME DESEJADO -->
+        <div class="config-scroll-body">
+            
+            <!-- Box 1: Personalização Visual -->
+            <div class="section-box">
+                <div class="section-heading">Personalização Visual</div>
+                <div class="row">
+                    <label for="themeSelect">Tema do Painel:</label>
+                    <select id="themeSelect" onchange="salvarTema(this.value)">
+                        <option value="floresta">Floresta Nativa (Padrão)</option>
+                        <option value="praia">Paraíso Tropical (Azul e Verde Praia)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Box 2: Sons e Áudio -->
+            <div class="section-box">
+                <div class="section-heading">Sons e Áudio</div>
+                <div class="row checkbox-row" style="margin-bottom: 8px;">
+                    <input type="checkbox" id="silenciarCheck">
+                    <label for="silenciarCheck">Silenciar todos os efeitos e trilha</label>
+                </div>
+                <div class="row" style="margin-bottom: 8px;">
+                    <label id="volumeLabel">Volume dos Efeitos: 50%</label>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                </div>
+                <!-- NOVO CONTROLE EXCLUSIVO PARA A MÚSICA -->
+                <div class="row">
+                    <label id="volumeMusicaLabel">Volume da Música: 40%</label>
+                    <input type="range" id="volumeMusicaSlider" min="0" max="100" value="40">
+                </div>
+            </div>
+
+
+            <!-- Box 3: Acessibilidade -->
+            <div class="section-box">
+                <div class="section-heading">Acessibilidade</div>
+                <div class="row">
+                    <label>Tamanho do Texto do Jogo:</label>
+                    <div style="display: flex; gap: 8px; margin-top: 4px;">
+                        <button class="btn btn-secondary" onclick="alterarTamanhoFonte(-2)" style="padding: 8px; flex: 1; font-size: 0.9rem;">A- (Diminuir)</button>
+                        <button class="btn btn-primary" onclick="alterarTamanhoFonte(2)" style="padding: 8px; flex: 1; font-size: 0.9rem;">A+ (Aumentar)</button>
+                    </div>
+                </div>
+                <div class="row checkbox-row" style="margin-top: 10px; margin-bottom: 0;">
+                    <input type="checkbox" id="reduzirMovCheck">
+                    <label for="reduzirMovCheck">Reduzir movimentos do mascote</label>
+                </div>
+            </div>
+
+            <!-- Box 4: Dicionário de Valores (Glossário Educacional Oficial ARA) -->
+<div class="section-box">
+  <div class="section-heading">📖 Dicionário de Valores (Glossário ARA)</div>
+  <div class="info-box-vertical">
+    <dl>
+      <dt>1. CONFIANÇA (nosso maior valor):</dt>
+      <dd>Confiança é algo que se conquista, fazendo o que se espera, com transparência.</dd>
+
+      <dt>2. HUMILDADE:</dt>
+      <dd>Aprender com os erros e acertos PRÓPRIOS e dos outros.</dd>
+
+      <dt>3. RESPONSABILIDADE SOCIAL:</dt>
+      <dd>Contribuir para a geração de emprego, renda e bem-estar para a sociedade.</dd>
+
+      <dt>4. FOCO NO BÁSICO:</dt>
+      <dd>Fazer o simples.</dd>
+
+      <dt>5. FAZER BEM FEITO SEMPRE:</dt>
+      <dd>O resultado é uma consequência.</dd>
+
+      <dt>6. MERITOCRACIA:</dt>
+      <dd>Valorização JUSTA do esforço com o resultado.</dd>
+
+      <dt>7. CUMPRIR O COMBINADO:</dt>
+      <dd>Honrar rigorosamente os compromissos, prazos e acordos firmados.</dd>
+
+      <dt>8. INTOLERÂNCIA A DESPERDÍCIOS:</dt>
+      <dd>Combater o uso ineficiente de recursos, tempo, materiais e insumos.</dd>
+
+      <dt>9. DETERMINAÇÃO & PERSISTÊNCIA:</dt>
+      <dd>Manter a atitude firme diante de desafios, não desistindo até alcançar os objetivos.</dd>
+
+      <dt>10. Prática do ELOGIO e da CRÍTICA construtiva:</dt>
+      <dd>Reconhecer as boas entregas e orientar para o desenvolvimento em busca da excelência.</dd>
+    </dl>
+  </div>
+</div>
+
+            <!-- Box 5: Como Jogar -->
+            <div class="section-box">
+                <div class="section-heading">❓ Como Jogar</div>
+                <div class="info-box-vertical">
+                    <ul>
+                        <li>Responda às perguntas ecológicas escolhendo uma das 4 alternativas.</li>
+                        <li>Suas opções de respostas são embaralhadas aleatoriamente a cada partida!</li>
+                        <li>Use a ajuda das <strong>Cartas</strong> para eliminar alternativas incorretas.</li>
+                        <li>Use o <strong>Pular</strong> se quiser passar para a próxima sem pontuar. Limite de 3 vezes.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BOTÃO SALVAR: FIXO NA BASE DA COLUNA VERTICAL -->
+        <div id="actionBtnArea" style="height: 46px; width: 100%; margin-top: 10px;">
+            <a href="index.html" class="btn btn-primary" style="width: 100%; display: block; line-height: 22px; text-decoration: none;">Salvar e Voltar</a>
+        </div>
+
+    </div>
+
+    <!-- Script de Sincronização Lógica -->
+    <script src="jogo.js"></script>
+</body>
+</html>
