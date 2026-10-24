@@ -60,13 +60,10 @@ body {
     border: 4px solid #082113;
     border-radius: 24px;
     width: 100%;
-    
-    /* Configuração de Painel de Bordo Horizontal Rígido na Web */
     max-width: 860px; 
     height: 520px;
     min-height: 520px;
     max-height: 95vh;
-    
     padding: 24px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 5px 15px rgba(0, 0, 0, 0.5);
     position: relative;
@@ -99,6 +96,7 @@ body {
 .hidden {
     display: none !important;
 }
+
 /* ==========================================================================
    3. ELEMENTOS DO MENU INICIAL (INDEX.HTML HORIZONTAL)
    ========================================================================== */
@@ -184,6 +182,17 @@ body {
 .btn-light { background: #e0e0e0; color: #333; border: 2px solid #fff; }
 .btn-wrong { background: var(--btn-wrong); color: #fff; border: 2px solid #fff; }
 
+/* Estilização contextual dos campos de entrada do formulário de perfil */
+.menu-right-section input[type="text"] {
+    background-color: var(--bg-wood-light) !important;
+    color: var(--card-brown-dark) !important;
+    border: 2px solid var(--card-brown-border) !important;
+    font-weight: bold !important;
+    transition: box-shadow 0.2s;
+}
+.menu-right-section input[type="text"]:focus {
+    box-shadow: 0 0 8px var(--text-yellow) !important;
+}
 /* ==========================================================================
    4. INTERFACE DO QUIZ (JOGO.HTML HORIZONTAL DESKTOP)
    ========================================================================== */
@@ -294,7 +303,6 @@ body {
     content: "X"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     color: #ff3333; font-size: 1.6rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
 }
-
 /* ==========================================================================
    6. ÁREA DINÂMICA DO MASCOTE E BOTÃO DE AÇÃO (WEB DESKTOP)
    ========================================================================== */
@@ -310,27 +318,26 @@ body {
 }
 
 .mascot-container-bg {
-  background: #f5ebd9 !important; /* Cor do fundo do container */
-  border: 3px solid var(--card-brown-dark);
-  outline: 2px solid var(--card-brown-border);
-  border-radius: 18px;
-  padding: 6px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  overflow: hidden !important; /* Esconde qualquer sobra que passe da borda arredondada */
+    background: var(--bg-wood-light) !important; /* Mantém a cor creme original */
+    border: 3px solid var(--card-brown-dark);
+    outline: 2px solid var(--card-brown-border);
+    border-radius: 18px;
+    padding: 6px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: hidden !important; 
 }
 
 .mascot-img {
-  width: 110px !important;  
-  height: 110px !important; 
-  object-fit: contain !important; 
-  border-radius: 12px !important;
-  display: block !important;
-  transform: scale(1.15) !important; /* Dá um leve zoom de 5% para empurrar as bordas do GIF para fora da área visível, fazendo a linha sumir */
+    width: 110px !important;  
+    height: 110px !important; 
+    object-fit: contain !important; 
+    border-radius: 12px !important;
+    display: block !important;
+    transform: scale(1.15) !important; /* Zoom para remover linhas da borda do GIF */
 }
-
 
 .speech-bubble {
     background: var(--text-yellow);
@@ -362,6 +369,7 @@ body {
 #actionBtnArea .btn { width: 100%; margin: 0; padding: 10px; font-size: 1rem; }
 
 @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
 /* ==========================================================================
    7. ESTILOS EXCLUSIVOS DA TELA DE OPÇÕES VERTICAL (WEB & MOBILE)
    ========================================================================== */
@@ -429,7 +437,6 @@ select { background-color: #fff; color: #333; cursor: pointer; }
 .info-box-vertical ul { padding-left: 16px; margin: 0; }
 .info-box-vertical li { margin-bottom: 4px; }
 
-/* Customização para deixar as barras de rolagem finas e integradas */
 .config-scroll-body::-webkit-scrollbar,
 .left-game-column::-webkit-scrollbar {
     width: 5px;
@@ -445,7 +452,7 @@ select { background-color: #fff; color: #333; cursor: pointer; }
 }
 
 /* ==========================================================================
-   8. SEÇÃO 9: MÍDIA QUERY CRÍTICA - DESATIVA GRID E TRAVA O SEU MOBILE PERFEITO
+   8. SEÇÃO 9: MÍDIA QUERY CRÍTICA - RESPONSIVIDADE MOBILE
    ========================================================================== */
 @media (max-width: 480px) {
     body { padding: 0; }
@@ -466,7 +473,6 @@ select { background-color: #fff; color: #333; cursor: pointer; }
         justify-content: flex-start;
     }
 
-    /* Quebra a grade horizontal da Web e força o fluxo vertical limpo de aplicativo */
     .dashboard-layout {
         display: flex !important;
         flex-direction: column !important;
@@ -499,7 +505,6 @@ select { background-color: #fff; color: #333; cursor: pointer; }
     .help-section { margin: 2px 0 4px 0; width: 100%; }
     .help-card { padding: 5px; font-size: 0.8rem; }
 
-    /* TAMANHO DO MASCOTE AJUSTADO: Maior e destacado no Celular (Conforme Solicitado) */
     .mascot-area {
         height: 105px !important;
         margin-top: 2px !important;
@@ -511,7 +516,6 @@ select { background-color: #fff; color: #333; cursor: pointer; }
     .mascot-img { width: 75px !important; height: 75px !important; }
     .speech-bubble { padding: 2px 6px; font-size: 0.68rem; margin-bottom: 1px; }
 
-    /* Área segura do botão Próxima/Tentar de novo colada no fundo do celular */
     #actionBtnArea {
         height: 40px;
         margin-top: auto;
@@ -521,7 +525,6 @@ select { background-color: #fff; color: #333; cursor: pointer; }
     #actionBtnArea .btn { padding: 8px; font-size: 0.85rem; }
 }
 
-/* Ocultação inteligente de cabeçalhos caso a tela seja minúscula (ex: modo paisagem em celular) */
 @media (max-height: 400px) {
     .title-board, .mascot-area { display: none !important; }
 }
