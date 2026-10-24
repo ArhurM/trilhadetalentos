@@ -31,6 +31,20 @@
     --btn-correct: #107e57;        /* Verde Alga Sólido */
 }
 
+/* ==========================================================================
+   SOBREPOSIÇÃO DINÂMICA: ADAPTA OS INPUTS AO TEMA PRAIA (PARAÍSO TROPICAL)
+   ========================================================================== */
+:root.theme-praia .menu-right-section input[type="text"] {
+    background-color: var(--bg-wood-light) !important; /* Areia de Praia Clara (#f7ebd3) */
+    color: var(--bg-green-dark) !important;       /* Azul Petróleo Profundo para o texto */
+    border: 2px solid var(--card-brown-dark) !important; /* Contorno Turquesa */
+}
+
+:root.theme-praia .menu-right-section input[type="text"]:focus {
+    box-shadow: 0 0 8px var(--btn-green) !important; /* Brilho Turquesa ao focar */
+}
+
+
 /* Reset Geral Antiquebra com Unidades Relativas (rem) */
 * {
     box-sizing: border-box;
