@@ -130,6 +130,7 @@ function alterarVolumeMusica(valor) {
     localStorage.setItem("volumeMusica", valor);
     aplicarConfiguracoesAudio();
 }
+
 /* ==========================================================================
    INICIALIZAÇÃO GLOBAL AUTOMÁTICA E OUVINTE DE CLIQUES UNIVERSAL
    ========================================================================== */
@@ -223,16 +224,12 @@ function alterarReacao(tipo, textoMensagem) {
    SISTEMA DE TEMPORIZADOR DE 30 SEGUNDOS
    ========================================================================== */
 function iniciarTemporizador() {
-  // Para qualquer contagem anterior por segurança
   pararTemporizador();
   
-  // Reseta o tempo conforme a configuração visual (Padrão: 30 segundos)
   tempoRestante = 30;
   atualizarInterfaceCronometro();
 
-  // Inicia a contagem regressiva de segundo em segundo
   idCronometro = setInterval(function() {
-    // Se o tempo limite estiver desativado nas opções, ignora a regressão
     const timerCheck = document.getElementById("timerCheck");
     if (timerCheck && !timerCheck.checked) {
       pararTemporizador();
@@ -244,20 +241,15 @@ function iniciarTemporizador() {
     tempoRestante--;
     atualizarInterfaceCronometro();
 
-     // ⏱️ DISPARADOR DE SUSPENSE: Toca o tique-taque a cada segundo nos últimos 10 segundos
     if (tempoRestante <= 10 && tempoRestante > 0) {
       tocarSom(SOM_TIQUETAQUE);
-    
 
-  // 🔊 Efeito de Cinema: Derruba o volume da música de fundo para dar suspense
       if (typeof MUSICA_FUNDO !== 'undefined' && localStorage.getItem("silenciado") !== "true") {
         const volumeMusicaSalvo = localStorage.getItem("volumeMusica") !== null ? parseInt(localStorage.getItem("volumeMusica")) : 30;
-        // Derruba a trilha sonora para apenas 10% do volume original configurado
         MUSICA_FUNDO.volume = (volumeMusicaSalvo / 100) * 0.1;
       }
     }  
 
-    // Quando o tempo esgota de vez
     if (tempoRestante <= 0) {
       pararTemporizador();
       fINALIZAR_POR_TEMPO_ESGOTADO();
@@ -271,13 +263,11 @@ function pararTemporizador() {
     idCronometro = null;
   }
 
-   // 🎵 CORTA O TIQUE-TAQUE IMEDIATAMENTE: Impede que ele continue rodando após o tempo zerar ou responder
   if (typeof SOM_TIQUETAQUE !== 'undefined') {
     SOM_TIQUETAQUE.pause();
     SOM_TIQUETAQUE.currentTime = 0;
   }
 
-  // 🔊 RESTAURA A TRILHA: Devolve o volume original da música assim que o suspense acaba
   if (typeof MUSICA_FUNDO !== 'undefined' && localStorage.getItem("silenciado") !== "true") {
     const volumeMusicaSalvo = localStorage.getItem("volumeMusica") !== null ? parseInt(localStorage.getItem("volumeMusica")) : 30;
     MUSICA_FUNDO.volume = volumeMusicaSalvo / 100;
@@ -288,7 +278,6 @@ function atualizarInterfaceCronometro() {
   const numElem = document.getElementById("numPergunta");
   if (!numElem) return;
 
-  // Se o tempo estiver acabando (abaixo de 10s), destaca visualmente
   if (tempoRestante <= 10) {
     numElem.innerHTML = "Pergunta " + (idxPergunta + 1) + " <span style='color:#ff3333; font-weight:bold; animation: popIn 0.5s infinite;'>⏱️ " + tempoRestante + "s</span>";
   } else {
@@ -297,21 +286,17 @@ function atualizarInterfaceCronometro() {
 }
 
 function fINALIZAR_POR_TEMPO_ESGOTADO() {
-  // Se já estiver respondido ou travado, ignora
   if (bloqueado) return;
-  
-  // Passa os parâmetros vazios simulando que o jogador perdeu a vez
   verificarResposta(false, null, opcoesDaRodadaAtual, true);
 }
 
 /* ==========================================================================
-   MECÂNICA CORE DO JOGO (ATUALIZADA COM SORTEIO ALEATÓRIO)
+   MECÂNICA CORE DO JOGO
    ========================================================================== */
 function iniciarJogo() {
   idxPergunta = 0;
   pulosRestantes = 3;
   
-  // 🎲 Sorteia 16 perguntas diferentes do banco total toda vez que o jogo inicia
   if (typeof obter16PerguntasAleatorias === 'function') {
     BANCO_PERGUNTAS.geral = obter16PerguntasAleatorias();
   }
@@ -329,7 +314,6 @@ function iniciarJogo() {
   
   carregarPergunta();
 }
-
 
 function carregarPergunta() {
   bloqueado = false;
@@ -384,7 +368,6 @@ function carregarPergunta() {
     container.appendChild(btn);
   });
 
-  // ⏱️ Inicializa o temporizador regressivo na nova pergunta
   iniciarTemporizador();
 }
 
@@ -392,10 +375,8 @@ function verificarResposta(eCorreta, btnClicado, opcoesComStatus, porTempoEsgota
   if (bloqueado && !porTempoEsgotado) return;
   bloqueado = true;
 
-  // ⏱️ Trava imediatamente o relógio na hora da resposta
   pararTemporizador();
 
-  // 🎵 TRAVA ANTIECO
   SOM_CLIQUE.pause();
   SOM_CLIQUE.currentTime = 0; 
 
@@ -429,7 +410,6 @@ function verificarResposta(eCorreta, btnClicado, opcoesComStatus, porTempoEsgota
       if (statusIcon) statusIcon.innerText = "✗";
     }
 
-    // Mostra qual era a alternativa certa para o jogador aprender
     todosBotoes.forEach(function(btn, idx) {
       if (opcoesComStatus[idx].eCorreta) {
         btn.classList.add("correct");
@@ -471,7 +451,6 @@ function usarPulo(e) {
     pulosRestantes--;
     e.currentTarget.classList.add('used');
     
-    // ⏱️ Pausa o relógio enquanto o mascote reage
     pararTemporizador();
     alterarReacao("pulo", "Uhu! Pergunta pulada!");
 
@@ -526,33 +505,22 @@ function usarCartas(e) {
 
 /* ==========================================================================
    SISTEMA EXTENSOR INTEGRADO (PARTE 1): CAPTURA E PROCESSAMENTO DE PONTOS
+   E INTEGRAÇÃO COM A API SERVERLESS DA VERCEL
    ========================================================================== */
+
+// ⚠️ ATENÇÃO: Substitua a URL abaixo pela URL real gerada no seu projeto da Vercel
+const API_URL = "https://trilhadetalentos.vercel.app/api/rank";
 
 let pontosTotais = 0;
 let cartasUtilizadasNestaPartida = false;
 let pulosUtilizadosNestaPartida = false;
 
-// Tabela de pontuação base indexada por pergunta
 const VALORES_PREMIOS_REAIS = [
-  1000,   // Pergunta 1
-  2000,   // Pergunta 2
-  3000,   // Pergunta 3
-  4000,   // Pergunta 4
-  5000,   // Pergunta 5
-  10000,  // Pergunta 6
-  20000,  // Pergunta 7
-  30000,  // Pergunta 8
-  40000,  // Pergunta 9
-  50000,  // Pergunta 10
-  100000, // Pergunta 11
-  200000, // Pergunta 12
-  300000, // Pergunta 13
-  400000, // Pergunta 14
-  500000, // Pergunta 15
-  1000000 // Pergunta 16 (Bônus de 1 Milhão)
+  1000, 2000, 3000, 4000, 5000,
+  10000, 20000, 30000, 40000, 50000,
+  100000, 200000, 300000, 400000, 500000, 1000000
 ];
 
-// 1. Escuta cliques globais nas ajudas para invalidar o bônus de "Sem Ajuda"
 document.addEventListener("click", function(evento) {
   const alvo = evento.target.closest(".help-card");
   if (alvo && !alvo.classList.contains("used")) {
@@ -561,7 +529,6 @@ document.addEventListener("click", function(evento) {
   }
 });
 
-// 2. Calcula os pontos considerando Prêmio Fixo + Velocidade (Tempo) + Bônus de Ajudas
 document.addEventListener("click", function(evento) {
   const alvo = evento.target.closest(".option-btn");
   if (alvo && typeof bloqueado !== 'undefined' && !bloqueado) {
@@ -570,18 +537,13 @@ document.addEventListener("click", function(evento) {
       if (alvo.classList.contains("correct")) {
         const currentIdx = (typeof idxPergunta !== 'undefined') ? idxPergunta : 0;
         
-        // 1. Inicia com a pontuação de prêmio fixa estabelecida para a pergunta atual
         let pontuacaoDaRodada = VALORES_PREMIOS_REAIS[currentIdx] || 1000;
-        
-        // 2. Adiciona o bônus dinâmico de velocidade
         pontuacaoDaRodada += Math.max(10, 100 - (tempoGasto * 3));
         
-        // 3. Adiciona bônus por passar limpo sem usar ajudas na rodada corrente
         if (!cartasUtilizadasNestaPartida && !pulosUtilizadosNestaPartida) {
           pontuacaoDaRodada += 50; 
         }
         
-        // Acumula matematicamente no montante global da partida
         pontosTotais += Math.round(pontuacaoDaRodada);
         localStorage.setItem("pontuacaoTemporaria", pontosTotais);
       }
@@ -591,7 +553,6 @@ document.addEventListener("click", function(evento) {
   }
 });
 
-// 3. Captura os gatilhos nativos de fim de jogo para computar o ranking
 const originalAlterarReacao = alterarReacao;
 alterarReacao = function(tipo, textoMensagem) {
   if (originalAlterarReacao) originalAlterarReacao(tipo, textoMensagem);
@@ -600,25 +561,29 @@ alterarReacao = function(tipo, textoMensagem) {
   }
 };
 
-function salvarPartidaNoRanking() {
+async function salvarPartidaNoRanking() {
   const perfilAtivo = JSON.parse(localStorage.getItem("perfilAtivo"));
   if (!perfilAtivo) return;
 
-  const ranking = JSON.parse(localStorage.getItem("rankingValores")) || [];
   const novaPontuacao = parseInt(localStorage.getItem("pontuacaoTemporaria")) || 0;
   if (novaPontuacao === 0) return;
 
-  ranking.push({
-    nome: perfilAtivo.nome,
-    sobrenome: perfilAtivo.sobrenome,
-    pontos: novaPontuacao,
-    data: new Date().toLocaleDateString('pt-BR')
-  });
-
-  // Ordena do maior score para o menor de forma estrita e mantém apenas o Top 10
-  ranking.sort((a, b) => b.pontos - a.pontos);
-  localStorage.setItem("rankingValores", JSON.stringify(ranking.slice(0, 10)));
-  localStorage.removeItem("pontuacaoTemporaria");
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nome: perfilAtivo.nome,
+        sobrenome: perfilAtivo.sobrenome,
+        pontos: novaPontuacao
+      })
+    });
+    localStorage.removeItem("pontuacaoTemporaria");
+  } catch (error) {
+    console.error("Erro ao salvar pontuação na API:", error);
+  }
 }
 
 function atualizarDadosPerfil() {
@@ -627,18 +592,16 @@ function atualizarDadosPerfil() {
     sobrenome: document.getElementById("perfSobre").value.trim()
   }));
 }
+
 /* ==========================================================================
    SISTEMA EXTENSOR INTEGRADO (PARTE 2): INJEÇÃO VISUAL E LOGICA FLUIDA
    ========================================================================== */
 
-window.addEventListener("DOMContentLoaded", function() {
-  // Verifica se o usuário está na Home do jogo buscando elementos estruturais do index.html
+window.addEventListener("DOMContentLoaded", async function() {
   if (document.querySelector(".menu-left-section") && document.querySelector(".menu-buttons")) {
-    // Força a limpeza do perfil temporário da sessão para obrigar um novo cadastro no quiosque
     localStorage.removeItem("perfilAtivo");
     localStorage.setItem("pontuacaoTemporaria", 0);
     
-    // Injeta os estilos essenciais para as animações e modais cromáticos sem quebrar o style.css
     const estiloAnimacao = document.createElement("style");
     estiloAnimacao.innerHTML = `
       @keyframes goldPulse {
@@ -656,7 +619,6 @@ window.addEventListener("DOMContentLoaded", function() {
 
     const containerDireito = document.querySelector(".menu-right-section");
     if (containerDireito) {
-      // Montagem do formulário de Perfil do Jogador - SEMPRE INICIA VAZIO
       const perfilBox = document.createElement("div");
       perfilBox.style.width = "100%";
       perfilBox.style.marginBottom = "10px";
@@ -677,7 +639,6 @@ window.addEventListener("DOMContentLoaded", function() {
       document.getElementById("perfNome").addEventListener("input", atualizarDadosPerfil);
       document.getElementById("perfSobre").addEventListener("input", atualizarDadosPerfil);
 
-      // Condicional Flexível: Pergunta se quer seguir de forma anônima
       document.querySelector(".btn-primary")?.addEventListener("click", function(e) {
         const n = document.getElementById("perfNome").value.trim();
         const s = document.getElementById("perfSobre").value.trim();
@@ -692,7 +653,6 @@ window.addEventListener("DOMContentLoaded", function() {
         }
       });
 
-      // Criação da mini-tabela do Pódium (Top 3)
       const rankingBox = document.createElement("div");
       rankingBox.style.width = "100%";
       rankingBox.style.marginTop = "10px";
@@ -701,32 +661,12 @@ window.addEventListener("DOMContentLoaded", function() {
       rankingBox.style.borderRadius = "14px";
       rankingBox.style.border = "1px solid rgba(255,255,255,0.08)";
       
-      const listaRanking = JSON.parse(localStorage.getItem("rankingValores")) || [];
-      let linhasTabela = "";
-      
-      if (listaRanking.length === 0) {
-        linhasTabela = `<tr><td colspan="3" style="text-align:center; padding:4px; font-size:0.75rem; color:#aaa;">Nenhum registro encontrado</td></tr>`;
-      } else {
-        // Exibe o Top 3 aplicando os estilos de Ouro, Prata e Bronze
-        listaRanking.slice(0, 3).forEach((player, i) => {
-          let classeCromatica = i === 0 ? 'class="top1-row"' : i === 1 ? 'class="top2-row"' : 'class="top3-row"';
-          let medalha = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
-          let inicialSobrenome = player.sobrenome ? ` ${player.sobrenome.trim().charAt(0).toUpperCase()}.` : "";
-          
-          linhasTabela += `
-            <tr ${classeCromatica}>
-              <td style="padding:5px; font-size:0.75rem; font-weight:bold; text-align:center; width:30px;">${medalha}</td>
-              <td style="padding:5px; font-size:0.75rem; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${player.nome}${inicialSobrenome}</td>
-              <td style="padding:5px; font-size:0.75rem; text-align:right; font-weight:bold; color:#27ae60;">${player.pontos} pts</td>
-            </tr>
-          `;
-        });
-      }
-
       rankingBox.innerHTML = `
         <div style="color:#ffeb7b; font-weight:bold; margin-bottom:4px; font-size:0.85rem; text-align:center;">🏆 PODIUM DOS TALENTOS</div>
         <table style="width:100%; border-collapse:collapse; color:#fff;">
-          <tbody>${linhasTabela}</tbody>
+          <tbody id="corpoPodiumMini">
+            <tr><td colspan="3" style="text-align:center; padding:4px; font-size:0.75rem; color:#aaa;">Carregando...</td></tr>
+          </tbody>
         </table>
         <div id="verRankingCompleto" style="text-align:center; margin-top:6px; font-size:0.75rem; color:#ffeb7b; text-decoration:underline; cursor:pointer; font-weight:bold;">
           Ver Ranking Completo
@@ -734,15 +674,53 @@ window.addEventListener("DOMContentLoaded", function() {
       `;
       containerDireito.appendChild(rankingBox);
 
+      try {
+        const response = await fetch(API_URL);
+        const listaRanking = await response.json();
+        atualizarTabelaPodium(listaRanking);
+      } catch (err) {
+        const tbody = document.getElementById("corpoPodiumMini");
+        if (tbody) tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:4px; font-size:0.75rem; color:#e74c3c;">Erro ao carregar ranking</td></tr>`;
+      }
+
       document.getElementById("verRankingCompleto").addEventListener("click", abrirModalRanking);
     }
   }
 });
 
-function abrirModalRanking() {
-  const listaRanking = JSON.parse(localStorage.getItem("rankingValores")) || [];
-  let corpoModalTable = "";
+function atualizarTabelaPodium(listaRanking) {
+  let linhasTabela = "";
+  if (!listaRanking || listaRanking.length === 0) {
+    linhasTabela = `<tr><td colspan="3" style="text-align:center; padding:4px; font-size:0.75rem; color:#aaa;">Nenhum registro encontrado</td></tr>`;
+  } else {
+    listaRanking.slice(0, 3).forEach((player, i) => {
+      let classeCromatica = i === 0 ? 'class="top1-row"' : i === 1 ? 'class="top2-row"' : 'class="top3-row"';
+      let medalha = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+      let inicialSobrenome = player.sobrenome ? ` ${player.sobrenome.trim().charAt(0).toUpperCase()}.` : "";
+      
+      linhasTabela += `
+        <tr ${classeCromatica}>
+          <td style="padding:5px; font-size:0.75rem; font-weight:bold; text-align:center; width:30px;">${medalha}</td>
+          <td style="padding:5px; font-size:0.75rem; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${player.nome}${inicialSobrenome}</td>
+          <td style="padding:5px; font-size:0.75rem; text-align:right; font-weight:bold; color:#27ae60;">${player.pontos} pts</td>
+        </tr>
+      `;
+    });
+  }
+  const tbody = document.getElementById("corpoPodiumMini");
+  if (tbody) tbody.innerHTML = linhasTabela;
+}
 
+async function abrirModalRanking() {
+  let listaRanking = [];
+  try {
+    const response = await fetch(API_URL);
+    listaRanking = await response.json();
+  } catch (e) {
+    console.error("Erro ao buscar ranking completo:", e);
+  }
+
+  let corpoModalTable = "";
   listaRanking.forEach((player, i) => {
     let classeCromatica = i === 0 ? 'class="top1-row"' : i === 1 ? 'class="top2-row"' : i === 2 ? 'class="top3-row"' : '';
     let posText = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}º`;
@@ -766,7 +744,7 @@ function abrirModalRanking() {
     <div class="modal-ranking-card">
       <div style="color:#ffeb7b; font-weight:bold; margin-bottom:12px; font-size:1rem; text-align:center;">🏆 LEADERBOARD - TOP 10</div>
       <div style="max-height:260px; overflow-y:auto; padding-right:2px; margin-bottom:15px;">
-        <table style="width:100%; border-collapse:collapse; color:#fff;">
+        <table style="width:100%; border-collapse:collapse; color: #fff;">
           <thead>
             <tr style="border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.75rem; color:#aaa; text-align:left;">
               <th style="padding:4px; text-align:center;">Pos</th>
@@ -777,7 +755,7 @@ function abrirModalRanking() {
           <tbody>${corpoModalTable}</tbody>
         </table>
       </div>
-      <div id="fecharModalRank" class="btn btn-secondary" style="padding:8px; font-size:0.85rem; border-radius:10px; width:100%; display:block; cursor:pointer;">Fechar Janela</div>
+      <div id="fecharModalRank" class="btn btn-secondary" style="padding:8px; font-size:0.85rem; border-radius:10px; width:100%; display:block; cursor:pointer; text-align:center;">Fechar Janela</div>
     </div>
   `;
 
