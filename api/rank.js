@@ -19,16 +19,35 @@ export default async function handler(req, res) {
       const rawRanking = await redis.zrange('leaderboard', 0, 9, { rev: true, withScores: true });
       
       const ranking = [];
-      for (let i = 0; i < rawRanking.length; i += 2) {
-        const fullName = rawRanking[i];
-        const [nome, ...resto] = fullName.split(' ');
-        const sobrenome = resto.join(' ');
+      
+      if (rawRanking && Array.isArray(rawRanking)) {
+        // Se o Upstash retornar num array plano [membro, score, membro, score...]
+        if (typeof rawRanking[0] === 'string') {
+          for (let i = 0; i < rawRanking.length; i += 2) {
+            const fullName = rawRanking[i];
+            const [nome, ...resto] = (fullName || '').split(' ');
+            const sobrenome = resto.join(' ');
 
-        ranking.push({
-          nome: nome || '',
-          sobrenome: sobrenome || '',
-          pontos: Number(rawRanking[i + 1])
-        });
+            ranking.push({
+              nome: nome || '',
+              sobrenome: sobrenome || '',
+              pontos: Number(rawRanking[i + 1]) || 0
+            });
+          }
+        } 
+        // Se o Upstash retornar em formato de objetos [{member, score}]
+        else {
+          rawRanking.forEach(item => {
+            if (item && item.member) {
+              const [nome, ...resto] = item.member.split(' ');
+              ranking.push({
+                nome: nome || '',
+                sobrenome: resto.join(' ') || '',
+                pontos: Number(item.score) || 0
+              });
+            }
+          });
+        }
       }
 
       return res.status(200).json(ranking);
