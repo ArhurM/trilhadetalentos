@@ -38,20 +38,22 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       const { nome, sobrenome, pontos, reset } = req.body || {};
 
-      // Opção de Reset via POST (opcional para facilitar chamadas no front-end)
+      // Opção de Reset via POST
       if (reset === true) {
         await redis.del('leaderboard');
         return res.status(200).json({ success: true, message: 'Ranking resetado com sucesso!' });
       }
 
-      if (!nome || typeof pontos !== 'number') {
+      // Converte e valida se os pontos são um número válido (aceita string numérica ou number)
+      const pontosNum = Number(pontos);
+      if (!nome || isNaN(pontosNum)) {
         return res.status(400).json({ error: 'Dados de pontuação inválidos.' });
       }
 
       const nomeCompleto = `${nome.trim()} ${sobrenome ? sobrenome.trim() : ''}`.trim();
 
-      // ZADD com { gt: true }: Atualiza a pontuação APENAS se o novo valor for MAIOR que o existente
-      await redis.zadd('leaderboard', { score: Number(pontos), member: nomeCompleto }, { gt: true });
+      // ZADD com { gt: true }: Atualiza apenas se o novo valor for MAIOR que o existente
+      await redis.zadd('leaderboard', { score: pontosNum, member: nomeCompleto }, { gt: true });
 
       return res.status(200).json({ success: true, message: 'Pontuação processada!' });
     }
