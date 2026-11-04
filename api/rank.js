@@ -1,53 +1,64 @@
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+const redis = Redis.fromEnv();
 
 export default async function handler(req, res) {
-  // Configuração de CORS para permitir requisições do GitHub Pages
+  // CORS para permitir requisições do seu front-end (GitHub Pages)
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Opcional: substitua '*' pela URL exata do seu GitHub Pages por segurança
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, POST, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+    return res.status(200).end();
   }
 
   try {
-    // GET: Retorna o ranking atual do Vercel KV
+    // 1. LER O RANKING (GET)
     if (req.method === 'GET') {
-      const ranking = await kv.get('leaderboard') || [];
+      // Procura os 10 melhores registados na chave 'leaderboard'
+      const rawRanking = await redis.zrange('leaderboard', 0, 9, { rev: true, withScores: true });
+      
+      const ranking = [];
+      for (let i = 0; i < rawRanking.length; i += 2) {
+        const fullName = rawRanking[i];
+        const [nome, ...resto] = fullName.split(' ');
+        const sobrenome = resto.join(' ');
+
+        ranking.push({
+          nome: nome || '',
+          sobrenome: sobrenome || '',
+          pontos: Number(rawRanking[i + 1])
+        });
+      }
+
       return res.status(200).json(ranking);
     }
 
-    // POST: Adiciona uma nova pontuação ao ranking
+    // 2. ADICIONAR / ATUALIZAR PONTUAÇÃO (POST)
     if (req.method === 'POST') {
-      const { nome, sobrenome, pontos } = req.body;
+      const { nome, sobrenome, pontos } = req.body || {};
 
-      if (!nome || typeof pontos !== 'number' || pontos <= 0) {
+      if (!nome || typeof pontos !== 'number') {
         return res.status(400).json({ error: 'Dados de pontuação inválidos.' });
       }
 
-      let ranking = await kv.get('leaderboard') || [];
+      // Cria a identificação única do jogador (evita duplicados pelo nome completo)
+      const nomeCompleto = `${nome.trim()} ${sobrenome ? sobrenome.trim() : ''}`.trim();
 
-      // Adiciona o novo jogador
-      ranking.push({
-        nome: nome.trim(),
-        sobrenome: sobrenome ? sobrenome.trim() : '',
-        pontos: parseInt(pontos),
-        data: new Date().toLocaleDateString('pt-BR')
-      });
+      // ZADD guarda ou atualiza a pontuação do jogador
+      await redis.zadd('leaderboard', { score: Number(pontos), member: nomeCompleto });
 
-      // Ordena do maior para o menor e mantém apenas o Top 10
-      ranking.sort((a, b) => b.pontos - a.pontos);
-      ranking = ranking.slice(0, 10);
-
-      // Salva de volta no Vercel KV
-      await kv.set('leaderboard', ranking);
-
-      return res.status(200).json({ success: true, ranking });
+      return res.status(200).json({ success: true, message: 'Pontuação guardada!' });
     }
 
-    res.setHeader('Allow', ['GET', 'POST']);
+    // 3. RESETAR O RANKING (DELETE)
+    if (req.method === 'DELETE') {
+      await redis.del('leaderboard');
+      return res.status(200).json({ success: true, message: 'Ranking resetado com sucesso!' });
+    }
+
+    res.setHeader('Allow', ['GET', 'POST', 'DELETE']);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
 
   } catch (error) {
@@ -55,4 +66,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 }
-
