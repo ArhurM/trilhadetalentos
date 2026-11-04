@@ -1,6 +1,10 @@
 import { Redis } from '@upstash/redis';
 
-const redis = Redis.fromEnv();
+// Inicialização segura compatível com Upstash direto ou Vercel KV
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN,
+});
 
 export default async function handler(req, res) {
   // Configuração de CORS para permitir requisições do GitHub Pages
@@ -21,7 +25,6 @@ export default async function handler(req, res) {
       const ranking = [];
       
       if (rawRanking && Array.isArray(rawRanking)) {
-        // Se o Upstash retornar num array plano [membro, score, membro, score...]
         if (typeof rawRanking[0] === 'string') {
           for (let i = 0; i < rawRanking.length; i += 2) {
             const fullName = rawRanking[i];
@@ -34,9 +37,7 @@ export default async function handler(req, res) {
               pontos: Number(rawRanking[i + 1]) || 0
             });
           }
-        } 
-        // Se o Upstash retornar em formato de objetos [{member, score}]
-        else {
+        } else {
           rawRanking.forEach(item => {
             if (item && item.member) {
               const [nome, ...resto] = item.member.split(' ');
@@ -57,13 +58,11 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       const { nome, sobrenome, pontos, reset } = req.body || {};
 
-      // Opção de Reset via POST
       if (reset === true) {
         await redis.del('leaderboard');
         return res.status(200).json({ success: true, message: 'Ranking resetado com sucesso!' });
       }
 
-      // Converte e valida se os pontos são um número válido (aceita string numérica ou number)
       const pontosNum = Number(pontos);
       if (!nome || isNaN(pontosNum)) {
         return res.status(400).json({ error: 'Dados de pontuação inválidos.' });
@@ -71,7 +70,6 @@ export default async function handler(req, res) {
 
       const nomeCompleto = `${nome.trim()} ${sobrenome ? sobrenome.trim() : ''}`.trim();
 
-      // ZADD com { gt: true }: Atualiza apenas se o novo valor for MAIOR que o existente
       await redis.zadd('leaderboard', { score: pontosNum, member: nomeCompleto }, { gt: true });
 
       return res.status(200).json({ success: true, message: 'Pontuação processada!' });
@@ -90,4 +88,4 @@ export default async function handler(req, res) {
     console.error('Erro na API de Ranking:', error);
     return res.status(500).json({ error: 'Erro interno no servidor.' });
   }
-    }
+}
