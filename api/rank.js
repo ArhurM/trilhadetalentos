@@ -3,7 +3,7 @@ import { Redis } from '@upstash/redis';
 const redis = Redis.fromEnv();
 
 export default async function handler(req, res) {
-  // CORS para permitir requisições do seu front-end (GitHub Pages)
+  // Configuração de CORS para permitir requisições do GitHub Pages
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS, POST, DELETE');
@@ -16,7 +16,6 @@ export default async function handler(req, res) {
   try {
     // 1. LER O RANKING (GET)
     if (req.method === 'GET') {
-      // Procura os 10 melhores registados na chave 'leaderboard'
       const rawRanking = await redis.zrange('leaderboard', 0, 9, { rev: true, withScores: true });
       
       const ranking = [];
@@ -35,21 +34,26 @@ export default async function handler(req, res) {
       return res.status(200).json(ranking);
     }
 
-    // 2. ADICIONAR / ATUALIZAR PONTUAÇÃO (POST)
+    // 2. ADICIONAR / ATUALIZAR PONTUAÇÃO OU RESET (POST)
     if (req.method === 'POST') {
-      const { nome, sobrenome, pontos } = req.body || {};
+      const { nome, sobrenome, pontos, reset } = req.body || {};
+
+      // Opção de Reset via POST (opcional para facilitar chamadas no front-end)
+      if (reset === true) {
+        await redis.del('leaderboard');
+        return res.status(200).json({ success: true, message: 'Ranking resetado com sucesso!' });
+      }
 
       if (!nome || typeof pontos !== 'number') {
         return res.status(400).json({ error: 'Dados de pontuação inválidos.' });
       }
 
-      // Cria a identificação única do jogador (evita duplicados pelo nome completo)
       const nomeCompleto = `${nome.trim()} ${sobrenome ? sobrenome.trim() : ''}`.trim();
 
-      // ZADD guarda ou atualiza a pontuação do jogador
-      await redis.zadd('leaderboard', { score: Number(pontos), member: nomeCompleto });
+      // ZADD com { gt: true }: Atualiza a pontuação APENAS se o novo valor for MAIOR que o existente
+      await redis.zadd('leaderboard', { score: Number(pontos), member: nomeCompleto }, { gt: true });
 
-      return res.status(200).json({ success: true, message: 'Pontuação guardada!' });
+      return res.status(200).json({ success: true, message: 'Pontuação processada!' });
     }
 
     // 3. RESETAR O RANKING (DELETE)
