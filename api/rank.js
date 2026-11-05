@@ -28,12 +28,12 @@ export default async function handler(req, res) {
         if (typeof rawRanking[0] === 'string') {
           for (let i = 0; i < rawRanking.length; i += 2) {
             const fullName = rawRanking[i];
-            const [nome, ...resto] = (fullName || '').split(' ');
-            const sobrenome = resto.join(' ');
-
+            if (!fullName) continue;
+            const [nome, ...resto] = fullName.split(' ');
+            
             ranking.push({
               nome: nome || '',
-              sobrenome: sobrenome || '',
+              sobrenome: resto.join(' ') || '',
               pontos: Number(rawRanking[i + 1]) || 0
             });
           }
@@ -56,23 +56,37 @@ export default async function handler(req, res) {
 
     // 2. ADICIONAR / ATUALIZAR PONTUAÇÃO OU RESET (POST)
     if (req.method === 'POST') {
-      const { nome, sobrenome, pontos, reset } = req.body || {};
+      const body = req.body || {};
+      const { nome, sobrenome, pontos, reset } = body;
 
+      // Opção de Reset via POST
       if (reset === true) {
         await redis.del('leaderboard');
         return res.status(200).json({ success: true, message: 'Ranking resetado com sucesso!' });
       }
 
-      const pontosNum = Number(pontos);
-      if (!nome || isNaN(pontosNum)) {
-        return res.status(400).json({ error: 'Dados de pontuação inválidos.' });
+      // Validação rigorosa para evitar valores nulos
+      if (!nome || pontos === undefined || pontos === null) {
+        return res.status(400).json({ error: 'Nome e pontos são obrigatórios.' });
       }
 
-      const nomeCompleto = `${nome.trim()} ${sobrenome ? sobrenome.trim() : ''}`.trim();
+      const pontosNum = Number(pontos);
+      if (isNaN(pontosNum)) {
+        return res.status(400).json({ error: 'Pontuação inválida.' });
+      }
 
+      const nomeLimpo = String(nome).trim();
+      const sobrenomeLimpo = sobrenome ? String(sobrenome).trim() : '';
+      const nomeCompleto = sobrenomeLimpo ? `${nomeLimpo} ${sobrenomeLimpo}` : nomeLimpo;
+
+      if (!nomeCompleto) {
+        return res.status(400).json({ error: 'Nome inválido.' });
+      }
+
+      // ZADD seguro com { gt: true }
       await redis.zadd('leaderboard', { score: pontosNum, member: nomeCompleto }, { gt: true });
 
-      return res.status(200).json({ success: true, message: 'Pontuação processada!' });
+      return res.status(200).json({ success: true, message: 'Pontuação processada com sucesso!' });
     }
 
     // 3. RESETAR O RANKING (DELETE)
@@ -86,6 +100,6 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Erro na API de Ranking:', error);
-    return res.status(500).json({ error: 'Erro interno no servidor.' });
+    return res.status(500).json({ error: 'Erro interno no servidor.', details: error.message });
   }
 }
